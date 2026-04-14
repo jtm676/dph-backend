@@ -18,7 +18,7 @@ router.post('/', authenticateToken, async (req, res) => {
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const col = req.user.role === 'therapist' ? 'b.therapist_id' : 'b.patient_id';
-    const { rows } = await pool.query(\`SELECT b.*,u.first_name,u.last_name FROM bookings b JOIN users u ON u.id=(CASE WHEN b.patient_id=$1 THEN b.therapist_id ELSE b.patient_id END) WHERE \${col}=$1 ORDER BY b.scheduled_at DESC\`, [req.user.id]);
+    const { rows } = await pool.query(`SELECT b.*,u.first_name,u.last_name FROM bookings b JOIN users u ON u.id=(CASE WHEN b.patient_id=$1 THEN b.therapist_id ELSE b.patient_id END) WHERE \${col}=$1 ORDER BY b.scheduled_at DESC`, [req.user.id]);
     return res.json(rows);
   } catch (err) { return res.status(500).json({ error: err.message }); }
 });
