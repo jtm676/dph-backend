@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query(\`
+    const { rows } = await pool.query(`
       SELECT u.id, u.first_name, u.last_name, t.specializations, t.bio, t.hourly_rate, t.rating, t.review_count, t.is_verified, t.location
-      FROM users u JOIN therapists t ON u.id=t.id WHERE u.is_active=TRUE ORDER BY t.rating DESC\`);
+      FROM users u JOIN therapists t ON u.id=t.id WHERE u.is_active=TRUE ORDER BY t.rating DESC`);
     return res.json(rows);
   } catch (err) { return res.status(500).json({ error: err.message }); }
 });
