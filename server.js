@@ -7,6 +7,9 @@ const logger = require('./utils/logger');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust Railway's proxy so rate-limit & IP headers work correctly
+app.set('trust proxy', 1);
+
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL,
   'http://localhost:3000',
@@ -23,14 +26,14 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10mb' }));
-app.use(rateLimit({ windowMs: 15*60*1000, max: 200, message: { error: 'Zu viele Anfragen.' } }));
+app.use(rateLimit({ windowMs: 15*60*1000, max: 200, message: { error: 'Zu viele Anfragen.' }, standardHeaders: true, legacyHeaders: false }));
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/triage', require('./routes/triage'));
-app.use('/api/letters', require('./routes/letters'));
+app.use('/api/auth',       require('./routes/auth'));
+app.use('/api/triage',     require('./routes/triage'));
+app.use('/api/letters',    require('./routes/letters'));
 app.use('/api/therapists', require('./routes/therapists'));
-app.use('/api/patients', require('./routes/patients'));
-app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/patients',   require('./routes/patients'));
+app.use('/api/bookings',   require('./routes/bookings'));
 
 app.get('/health', (req, res) => res.json({ status: 'ok', service: 'DPH Backend', ts: new Date().toISOString() }));
 
